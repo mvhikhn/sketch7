@@ -10,16 +10,23 @@ let colors = [
 
 function setup() {
   frameRate(10);
-  createCanvas(1700, 800);
-  rows = height / resolution;
-  cols = width / resolution;
-  grid = createRandomGrid();
+  const canvas = createCanvas(800, 800);
+  canvas.elt.style.display = 'block';
+  canvas.elt.style.maxWidth = '100%';
+  canvas.elt.style.height = 'auto';
+  resizeGrid();
   background(255);
 }
 
 function draw() {
   updateGrid();
   drawGrid();
+}
+
+function resizeGrid() {
+  rows = floor(height / resolution);
+  cols = floor(width / resolution);
+  grid = createRandomGrid();
 }
 
 function createRandomGrid() {
@@ -29,19 +36,16 @@ function createRandomGrid() {
 
 function updateGrid() {
   let nextGrid = Array.from({ length: cols }, () => Array(rows).fill(0));
-
   for (let i = 0; i < cols; i++) {
     for (let j = 0; j < rows; j++) {
       let neighbors = countNeighbors(i, j);
       let state = grid[i][j];
-
       if (state === 0 && neighbors === 3) nextGrid[i][j] = 1;
       else if (state === 1 && (neighbors < 2 || neighbors > 3)) nextGrid[i][j] = 2;
       else if (state === 2) nextGrid[i][j] = 0;
       else nextGrid[i][j] = state;
     }
   }
-
   grid = nextGrid;
 }
 
@@ -68,4 +72,10 @@ function drawGrid() {
       rect(x, y, resolution, resolution);
     }
   }
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+  resizeGrid();
+  background(255);
 }
